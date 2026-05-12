@@ -28,13 +28,6 @@ jobs:
       - run: pip install -r requirements.txt
       - run: pytest
 
-  # build:
-  #   runs-on: ubuntu-latest
-  #   needs: test        # only runs if tests pass
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - run: docker build -t cidcd_demo .
-    
   build:
     runs-on: ubuntu-latest
     needs: test
@@ -44,3 +37,31 @@ jobs:
       - run: docker build -t cicd-demo .
       - run: echo "Key is ${{ secrets.AWS_ACCESS_KEY_ID }}"
       - run: echo "Secret is ${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+  
+  push-to-ecr:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, tag, and push image to ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: cicd-demo
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
