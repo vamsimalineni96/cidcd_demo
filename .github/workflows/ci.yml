@@ -33,4 +33,4 @@ jobs:
     needs: test        # only runs if tests pass
     steps:
       - uses: actions/checkout@v3
-      - run: docker build -t cicd-demo .
+      - run: docker build -t cidcd_demo .
