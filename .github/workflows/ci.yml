@@ -28,9 +28,18 @@ jobs:
       - run: pip install -r requirements.txt
       - run: pytest
 
+  # build:
+  #   runs-on: ubuntu-latest
+  #   needs: test        # only runs if tests pass
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - run: docker build -t cidcd_demo .
+    
   build:
     runs-on: ubuntu-latest
-    needs: test        # only runs if tests pass
+    needs: test
     steps:
-      - uses: actions/checkout@v3
-      - run: docker build -t cidcd_demo .
+      - uses: actions/checkout@v4
+      - run: docker build -t cicd-demo .
+      - run: echo "AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE"
+      - run: echo "AWS_SECRET_ACCESS_KEY=super-secret-key-123"
