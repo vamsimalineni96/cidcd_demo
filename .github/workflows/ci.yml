@@ -41,5 +41,5 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: docker build -t cicd-demo .
-      - run: echo "AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE"
-      - run: echo "AWS_SECRET_ACCESS_KEY=super-secret-key-123"
+      - run: echo "Key is ${{ secrets.AWS_ACCESS_KEY_ID }}"
+      - run: echo "Secret is ${{ secrets.AWS_SECRET_ACCESS_KEY }}"
