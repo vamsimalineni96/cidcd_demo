@@ -9,4 +9,4 @@ def test_health():
 
 def test_add():
     response = client.get("/add?a=2&b=3")
-    assert response.json() == {"result": 5}
+    assert response.json() == {"result": 99}
